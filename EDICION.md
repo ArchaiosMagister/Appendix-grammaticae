@@ -9,7 +9,7 @@ Web estática en español sobre gramática latina y griega. El contenido latino 
 - Comparación, infinitivos y participios: una sola página por tema, con secciones `#morfologia` y `#sintaxis`. Los dos índices dirigen a la sección correspondiente.
 - Griego: resumen gramatical completo y anexos del Cuaderno de Griego II. Incluye tablas originales convertidas a HTML, fichas compartidas y búsqueda en ambas lenguas.
 
-Esta primera edición adapta el texto de los documentos y recompone los paradigmas básicos. No reproduce todos los cuadros de conjugaciones y de verbos irregulares de los originales. Las precisiones respecto de los originales se enumeran en `fuentes.html`.
+Esta primera edición adapta el texto de los documentos y recompone los paradigmas básicos. Los cuadros de indicativo y subjuntivo, en activa y pasiva, y los irregulares del resumen verbal están desarrollados en sus propios apartados. Las precisiones respecto de los originales se enumeran en `fuentes.html`.
 
 ## Publicación
 
@@ -34,3 +34,7 @@ El usuario confirmó utilizar el resumen gramatical completo y sus anexos, porqu
 ## Navegación por curso y unidades
 
 `curso.html` ofrece 10 unidades acumulativas de Latín I y 14 de Griego I, según el documento de contenidos del usuario. Los extractos de cada unidad están en `assets/curriculum.json`; no se filtran capítulos completos, porque podrían contener formas de unidades posteriores. El buscador usa únicamente los extractos visibles cuando se selecciona 1.º. En 2.º se muestran los índices completos sin filtro por unidades. La selección se guarda en la URL y, cuando está disponible, en el navegador.
+
+## Tema de color y paradigmas verbales
+
+El selector de tema permite automático, claro y oscuro, y guarda la elección en el navegador. Los paradigmas regulares contienen las seis personas de seis tiempos de indicativo y cuatro de subjuntivo en ambas voces. Los irregulares del resumen son sum, fero, eo, fio y volo; se completa la pasiva de fero. Los tiempos compuestos permiten elegir género. En Latín I solo se incorporan los tiempos y voces correspondientes a cada unidad.

@@ -28,6 +28,7 @@ async function renderCourse(){
   const links=document.createElement('div');links.className='two';
   addLink(links,'Morfología',selection.language==='latin'?'morfologia.html':'griego-morfologia.html','Consultar todas las formas y los paradigmas.');
   addLink(links,'Sintaxis',selection.language==='latin'?'sintaxis.html':'griego-sintaxis.html','Consultar todos los usos y construcciones.');content.append(links);
+  if(selection.language==='latin'){const p=document.createElement('p');for(const [label,url] of [['Paradigmas verbales regulares','paradigmas-verbales.html'],['Verbos irregulares más frecuentes','verbos-irregulares.html']]){const a=document.createElement('a');a.href=url;a.textContent=label+' →';a.style.display='block';p.append(a);}content.append(p);}
   if(selection.language==='griego'){const p=document.createElement('p'),a=document.createElement('a');a.href='griego-anexos.html';a.textContent='Consultar los anexos griegos →';p.append(a);content.append(p);}return;
  }
  unitsPanel.hidden=false;description.textContent=`Contenidos acumulados hasta la unidad ${selection.unit}.`;
@@ -78,6 +79,7 @@ async function search(){
 }
 let searchTicket=0;
 if(input&&results){input.addEventListener('input',search);input.addEventListener('keydown',e=>{if(e.key==='Escape'){results.hidden=true;input.value='';searchTicket++;}else if(e.key==='ArrowDown'){const a=results.querySelector('a');if(a){e.preventDefault();a.focus();}}});input.addEventListener('focus',()=>{if(input.value.trim())search();});document.addEventListener('click',e=>{if(!e.target.closest('.searchbar'))results.hidden=true;});}
+document.addEventListener('change',event=>{if(event.target.matches('#participle-gender,[data-participle-gender]')){const gender=event.target.value;for(const form of document.querySelectorAll('.gender-form')){const value=form.getAttribute('data-'+gender);if(value)form.textContent=value;}}});
 // Changing course/unit invalidates stale results from the previous selection.
 document.addEventListener('click',e=>{if(e.target.closest('#unit-buttons')){if(results)results.hidden=true;if(input)input.value='';searchTicket++;}});
 })();
