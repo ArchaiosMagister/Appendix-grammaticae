@@ -107,7 +107,7 @@ async function renderCourse(){
   const button=document.createElement('button');button.type='button';button.textContent=`Unitat ${u}`;button.setAttribute('aria-pressed',String(u===selection.unit));button.dataset.unit=u;
   button.addEventListener('click',()=>{selection.unit=u;updateURL();renderCourse();});buttons.append(button);
  }
- try{curriculum??=await loadJSON('../assets/curriculum.json');if(ticket!==requestId)return;
+ try{curriculum??=await loadJSON('curriculum.json');if(ticket!==requestId)return;
   for(const unit of curriculum[selection.language].units.filter(u=>u.number<=selection.unit)){
    const section=document.createElement('section');section.className='unit-section';const h2=document.createElement('h2');h2.textContent=`Unitat ${unit.number}`;h2.id=`unidad-${unit.number}`;section.append(h2);
    for(let j=0;j<unit.topics.length;j++){
@@ -142,8 +142,8 @@ async function search(){
   const limited=page==='curso.html'&&selection.year==='1';const data=limited?visibleSearch:(searchIndex??=await loadJSON('../assets/search-data.json'));
   if(ticket!==searchTicket)return;const words=q.split(/\s+/),scope=page==='curso.html'?data.filter(p=>p.language===selection.language):data;
   const hits=scope.filter(p=>norm(p.title+' '+p.text).includes(q)).sort((a,b)=>Number(norm(b.title).includes(q))-Number(norm(a.title).includes(q)));
-  const message=document.createElement('p');message.textContent=hits.length?`${hits.length} temas encontrados${limited?' en las unidades seleccionadas':''}`:'No hi ha resultats en este recorregut.';results.append(message);
-  for(const hit of hits){const a=document.createElement('a');a.href=hit.url;a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unidad ${hit.unit}`:''}`;a.append(small);
+  const message=document.createElement('p');message.textContent=hits.length?`${hits.length} temes trobats${limited?' en les unitats seleccionades':''}`:'No hi ha resultats en este recorregut.';results.append(message);
+  for(const hit of hits){const a=document.createElement('a');a.href=hit.url;a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
    if(hit.url.startsWith('#'))a.addEventListener('click',()=>{const d=document.getElementById(hit.url.slice(1));if(d)d.open=true;results.hidden=true;});results.append(a);}
  }catch{results.textContent='No s’ha pogut carregar el buscador. Pots consultar els índexs.';}
 }
