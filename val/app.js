@@ -8,7 +8,7 @@ selection.unit=Math.max(1,Math.min(maxUnits(selection.language),parseInt(params.
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/æ/g,'ae').toLowerCase().replace(/ς/g,'σ').replace(/\s+/g,' ');
 const courseURL=(language,year,unit=1)=>`curso.html?lengua=${language}&curso=${year}${year==='1'?`&unidad=${unit}`:''}`;
 let curriculum,visibleSearch=[],requestId=0;
-async function loadJSON(url){const r=await fetch(url);if(!r.ok)throw Error('No se pudo cargar');return r.json();}
+async function loadJSON(url){const r=await fetch(url);if(!r.ok)throw Error('No s’ha pogut carregar');return r.json();}
 function updateSelectors(){for(const form of document.querySelectorAll('.course-selector')){form.elements.lengua.value=selection.language;form.elements.curso.value=selection.year;}
 
  const nav=document.querySelector('header nav');
@@ -98,7 +98,7 @@ async function renderCourse(){
   const links=document.createElement('div');links.className='two';
   addLink(links,'Morfologia',selection.language==='latin'?'morfologia.html':'griego-morfologia.html','Consulta totes les formes i els paradigmes.');
   addLink(links,'Sintaxi',selection.language==='latin'?'sintaxis.html':'griego-sintaxis.html','Consulta tots els usos i les construccions.');content.append(links);
-  if(selection.language==='latin'){const p=document.createElement('p');for(const [label,url] of [['Paradigmes verbals regulars','paradigmas-verbales.html'],['Verbs irregulars més freqüents','verbos-irregulares.html']]){const a=document.createElement('a');a.href=url;a.textContent=label+' →';a.style.display='block';p.append(a);}content.append(p);}
+  if(selection.language==='latin'){const p=document.createElement('p');for(const [label,url] of [['Paradigmes verbals regulars','../paradigmas-verbales.html'],['Verbs irregulars més freqüents','../verbos-irregulares.html']]){const a=document.createElement('a');a.href=url;a.textContent=label+' →';a.style.display='block';p.append(a);}content.append(p);}
   if(selection.language==='griego'){const p=document.createElement('p'),a=document.createElement('a');a.href='griego-anexos.html';a.textContent='Consultar els annexos grecs →';p.append(a);content.append(p);}return;
  }
  unitsPanel.hidden=false;description.textContent=`Continguts acumulats fins a la unitat ${selection.unit}.`;
@@ -143,7 +143,7 @@ async function search(){
   if(ticket!==searchTicket)return;const words=q.split(/\s+/),scope=page==='curso.html'?data.filter(p=>p.language===selection.language):data;
   const hits=scope.filter(p=>norm(p.title+' '+p.text).includes(q)).sort((a,b)=>Number(norm(b.title).includes(q))-Number(norm(a.title).includes(q)));
   const message=document.createElement('p');message.textContent=hits.length?`${hits.length} temes trobats${limited?' en les unitats seleccionades':''}`:'No hi ha resultats en este recorregut.';results.append(message);
-  for(const hit of hits){const a=document.createElement('a');a.href=hit.url.startsWith('#')?hit.url:'../'+hit.url.replace(/^\.\.\//,'');a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
+  for(const hit of hits){const a=document.createElement('a');a.href=hit.url.startsWith('#')?hit.url:hit.url.startsWith('../')?hit.url:hit.url.startsWith('/')?hit.url:'../'+hit.url;a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
    if(hit.url.startsWith('#'))a.addEventListener('click',()=>{const d=document.getElementById(hit.url.slice(1));if(d)d.open=true;results.hidden=true;});results.append(a);}
  }catch{results.textContent='No s’ha pogut carregar el buscador. Pots consultar els índexs.';}
 }
