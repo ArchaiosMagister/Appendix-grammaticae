@@ -54,6 +54,34 @@ async function resolveLatinTopic(topic){
  }
  return sectionHTML(doc,section);
 }
+async function resolveUnitParadigms(html){
+ const fragment=new DOMParser().parseFromString('<main>'+html+'</main>','text/html');
+ const main=fragment.querySelector('main'),regular=await getChapter('paradigmas-verbales.html'),irregular=await getChapter('verbos-irregulares.html');
+ const sumTable=irregular.querySelector('[aria-label="sum · indicativo"] table');
+ if(!sumTable)throw Error('Falta paradigma de sum');
+ const names=['Presente','Imperfecto','Futuro imperfecto','Perfecto','Pluscuamperfecto','Futuro perfecto'];
+ const header=[...sumTable.querySelectorAll('thead th')].map(x=>x.textContent.trim());
+ const body=[...sumTable.querySelectorAll('tbody tr')];
+ const headings=[...main.querySelectorAll('h3')];
+ for(const heading of headings){
+  const label=heading.textContent.trim(),wrap=heading.nextElementSibling;
+  if(!wrap?.matches('.table-wrap'))continue;
+  const fresh=[...regular.querySelectorAll('.table-wrap.verb-table')].find(x=>x.getAttribute('aria-label')===label);
+  if(fresh)wrap.replaceWith(fresh.cloneNode(true));
+  const time=names.find(n=>label.toLowerCase().startsWith(n.toLowerCase()+' de indicativo'));
+  const index=header.findIndex(h=>h.toLowerCase()===time?.toLowerCase());
+  if(index<1)continue;
+  const container=fragment.createElement('div');container.className='table-wrap verb-table';container.setAttribute('role','region');container.setAttribute('tabindex','0');
+  const table=fragment.createElement('table');const caption=fragment.createElement('caption');caption.textContent='sum · '+time+' de indicativo';table.append(caption);
+  const thead=fragment.createElement('thead');thead.innerHTML='<tr><th scope="col">Persona</th><th scope="col">sum, esse, fui</th></tr>';table.append(thead);
+  const tbody=fragment.createElement('tbody');
+  for(const row of body){const tr=fragment.createElement('tr'),th=row.querySelector('th')?.cloneNode(true),cell=row.querySelectorAll('td')[index-1]?.cloneNode(true);if(th&&cell){tr.append(th,cell);tbody.append(tr);}}
+  table.append(tbody);container.append(table);
+  const title=fragment.createElement('h4');title.textContent='Verbo sum · '+time;
+  const after=heading.nextElementSibling;after.after(title,container);
+ }
+ return main.innerHTML;
+}
 function stripHTML(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
 function addLink(parent,title,url,description){const a=document.createElement('a');a.href=url;a.className='path';const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=description;a.append(h,p);parent.append(a);}
 async function renderCourse(){
@@ -84,7 +112,7 @@ async function renderCourse(){
     // Current unit is open; previous material remains available in concise accordions.
     details.open=unit.number===selection.unit;
     const summary=document.createElement('summary'),label=document.createElement('span');label.className='eyebrow';label.textContent=topic.group;const title=document.createElement('span');title.className='lesson-title';title.textContent=topic.title;summary.append(label,title);
-    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.source&&selection.language==='latin'?await resolveLatinTopic(topic).catch(()=>topic.html):topic.html;if(ticket!==requestId)return;details.append(summary,body);section.append(details);
+    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.source&&selection.language==='latin'?await resolveLatinTopic(topic).catch(()=>topic.html):selection.language==='latin'&&topic.title==='Paradigmas regulares de esta unidad'?await resolveUnitParadigms(topic.html).catch(()=>topic.html):topic.html;if(ticket!==requestId)return;details.append(summary,body);section.append(details);
     visibleSearch.push({title:topic.title,language:selection.language,text:stripHTML(body.innerHTML),url:`#${details.id}`,unit:unit.number});
    }content.append(section);
   }
