@@ -115,13 +115,13 @@ async function renderCourse(){
     // Current unit is open; previous material remains available in concise accordions.
     details.open=unit.number===selection.unit;
     const summary=document.createElement('summary'),label=document.createElement('span');label.className='eyebrow';label.textContent=topic.group;const title=document.createElement('span');title.className='lesson-title';title.textContent=topic.title;summary.append(label,title);
-    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.source&&selection.language==='latin'?await resolveLatinTopic(topic).catch(()=>topic.html):selection.language==='latin'&&topic.title==='Paradigmas regulares de esta unidad'?await resolveUnitParadigms(topic.html).catch(()=>topic.html):topic.html;if(ticket!==requestId)return;details.append(summary,body);section.append(details);
+    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.html;for(const a of body.querySelectorAll('a[href]')){const href=a.getAttribute('href');if(href&&!/^(?:#|https?:|mailto:|\/)/.test(href)&&!href.startsWith('../')&&!href.startsWith('val/'))a.setAttribute('href','../'+href);}if(ticket!==requestId)return;details.append(summary,body);section.append(details);
     visibleSearch.push({title:topic.title,language:selection.language,text:stripHTML(body.innerHTML),url:`#${details.id}`,unit:unit.number});
    }content.append(section);
   }
   const note=document.createElement('p');note.className='course-note';note.textContent=`Es mostren les unitats 1–${selection.unit} de ${maxUnits(selection.language)}. Les unitats posteriors encara no apareixen.`;content.append(note);
   if(location.hash){const target=document.getElementById(location.hash.slice(1));if(target){if(target.tagName==='DETAILS')target.open=true;target.scrollIntoView();}}
- }catch{content.innerHTML='<p>No se han podido cargar las unidades. Comprueba la conexión y vuelve a intentarlo.</p>';}
+ }catch{content.innerHTML='<p>No s’han pogut carregar les unitats. Comprova la connexió i torna-ho a intentar.</p>';}
 }
 for(const form of document.querySelectorAll('.course-selector'))form.addEventListener('submit',e=>{
  e.preventDefault();const language=form.elements.lengua.value,year=form.elements.curso.value;
@@ -143,7 +143,7 @@ async function search(){
   if(ticket!==searchTicket)return;const words=q.split(/\s+/),scope=page==='curso.html'?data.filter(p=>p.language===selection.language):data;
   const hits=scope.filter(p=>norm(p.title+' '+p.text).includes(q)).sort((a,b)=>Number(norm(b.title).includes(q))-Number(norm(a.title).includes(q)));
   const message=document.createElement('p');message.textContent=hits.length?`${hits.length} temes trobats${limited?' en les unitats seleccionades':''}`:'No hi ha resultats en este recorregut.';results.append(message);
-  for(const hit of hits){const a=document.createElement('a');a.href=hit.url;a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
+  for(const hit of hits){const a=document.createElement('a');a.href=hit.url.startsWith('#')?hit.url:'../'+hit.url.replace(/^\.\.\//,'');a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
    if(hit.url.startsWith('#'))a.addEventListener('click',()=>{const d=document.getElementById(hit.url.slice(1));if(d)d.open=true;results.hidden=true;});results.append(a);}
  }catch{results.textContent='No s’ha pogut carregar el buscador. Pots consultar els índexs.';}
 }
