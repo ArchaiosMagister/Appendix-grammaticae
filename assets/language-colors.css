@@ -15,3 +15,15 @@
 :root[data-language] .greek-note{--green:#155eaa;background:#e5effe;border-color:var(--green)}
 :root[data-language][data-theme=dark] .greek-note{--green:#90c2ff;background:#22364b;border-color:var(--green);color:#e6effa}
 @media print{:root[data-language],:root[data-language][data-theme=dark]{--paper:#fff;--ink:#000;--green:#000;--accent:#000;--muted:#444;--line:#ccc;--language-soft:#fff;--language-row:#fff;--language-button:#fff;--language-button-ink:#000;--language-hover:#fff}:root[data-language] .greek-note{background:white;color:black}}
+
+/* Greek accents on the mixed-language home page, matching Greek sections. */
+:root[data-language] .home-greek{--green:#155eaa;--accent:#12559c;--language-hover:#dceaff}
+:root[data-language] .home-greek .eyebrow,:root[data-language] .home-greek h2,:root[data-language] .home-greek .path,:root[data-language] .home-greek .path>span{color:var(--green)}
+:root[data-language] .home-greek .path{border-color:#b8d1ef;background:#f0f6ff}
+:root[data-language] .home-greek .path p{color:#4b617b}
+:root[data-language] .home-greek .path:hover{background:var(--language-hover);border-color:var(--green)}
+:root[data-language][data-theme=dark] .home-greek{--green:#90c2ff;--accent:#b1d4ff;--language-hover:#29425e}
+:root[data-language][data-theme=dark] .home-greek .path{background:#22364b;border-color:#3c526b}
+:root[data-language][data-theme=dark] .home-greek .path p{color:#b0bfd1}
+:root[data-language][data-theme=dark] .home-greek .path:hover{background:var(--language-hover);border-color:var(--green)}
+@media print{:root[data-language] .home-greek .path{background:white;color:black;border-color:#ccc}:root[data-language] .home-greek .path p{color:#444}}
