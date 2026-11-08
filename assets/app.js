@@ -10,9 +10,12 @@ const courseURL=(language,year,unit=1)=>`curso.html?lengua=${language}&curso=${y
 let curriculum,visibleSearch=[],requestId=0;
 async function loadJSON(url){const r=await fetch(url);if(!r.ok)throw Error('No se pudo cargar');return r.json();}
 function updateSelectors(){for(const form of document.querySelectorAll('.course-selector')){form.elements.lengua.value=selection.language;form.elements.curso.value=selection.year;}
- const nav=document.querySelector('header nav');if(nav&&page==='curso.html'){
-  nav.replaceChildren();const links=selection.year==='1'?[['Inicio','index.html'],['Latín I',courseURL('latin','1',selection.language==='latin'?selection.unit:1)],['Griego I',courseURL('griego','1',selection.language==='griego'?selection.unit:1)]]:[['Inicio','index.html'],['Latín II',courseURL('latin','2')],['Griego II',courseURL('griego','2')]];
-  for(const [label,url] of links){const a=document.createElement('a');a.href=url;a.textContent=label;nav.append(a);}
+
+ const nav=document.querySelector('header nav');
+ if(nav){
+  const links=[['Inicio','index.html'],['Morfología latina','morfologia.html'],['Sintaxis latina','sintaxis.html'],['Morfología griega','griego-morfologia.html'],['Sintaxis griega','griego-sintaxis.html']];
+  nav.replaceChildren();
+  for(const [label,url] of links){const a=document.createElement('a');a.href=url;a.textContent=label;if(page===url)a.setAttribute('aria-current','page');nav.append(a);}
  }
 }
 function updateURL(){history.replaceState(null,'',courseURL(selection.language,selection.year,selection.unit));safeStorage.set(selection);}
