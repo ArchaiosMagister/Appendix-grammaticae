@@ -38,3 +38,7 @@ El usuario confirmó utilizar el resumen gramatical completo y sus anexos, porqu
 ## Tema de color y paradigmas verbales
 
 El selector de tema permite automático, claro y oscuro, y guarda la elección en el navegador. Los paradigmas regulares contienen las seis personas de seis tiempos de indicativo y cuatro de subjuntivo en ambas voces. Los irregulares del resumen son sum, fero, eo, fio y volo; se completa la pasiva de fero. Los tiempos compuestos permiten elegir género. En Latín I solo se incorporan los tiempos y voces correspondientes a cada unidad.
+
+## Sincronización de Latín I con los capítulos completos
+
+Las unidades 3, 4 y 5 de Latín I reutilizan directamente los apartados pertinentes de los capítulos HTML: sustantivación del adjetivo, tercera declinación, adjetivos de tercera declinación y perfecto/pluscuamperfecto activos. `assets/curriculum.json` declara el origen en el campo `source`; `assets/app.js` recupera y recorta los contenidos al cargar la unidad, sin mostrar los temas posteriores ni las voces pasivas antes de su unidad. Las tablas de perfecto y pluscuamperfecto activos y las formas de `sum` proceden de los capítulos completos. No es necesario copiar de nuevo esos apartados cuando se modifiquen los capítulos. Las demás unidades conservan sus extractos didácticos independientes. La visualización requiere conexión HTTP, como ya ocurre con el currículo y el buscador.
