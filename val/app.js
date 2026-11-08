@@ -5,6 +5,7 @@ const saved=safeStorage.get()||{};
 let selection={language:['latin','griego'].includes(params.get('lengua'))?params.get('lengua'):(page.startsWith('griego')?'griego':saved.language||'latin'),year:params.get('curso')==='2'?'2':params.get('curso')==='1'?'1':saved.year||'1',unit:1};
 const maxUnits=language=>language==='griego'?14:10;
 selection.unit=Math.max(1,Math.min(maxUnits(selection.language),parseInt(params.get('unidad')||saved.unit||'1',10)||1));
+const valencianPages=new Set(["griego-adjetivos.html","griego-anexos.html","griego-aoristos.html","griego-atematicos.html","griego-aumento.html","griego-casos.html","griego-comparacion.html","griego-contracciones.html","griego-contractos.html","griego-correspondencias.html","griego-eimi.html","griego-imperativo.html","griego-indicativo.html","griego-infinitivo.html","griego-morfologia.html","griego-optativo.html","griego-participios.html","griego-pronombres.html","griego-resumen-verbal.html","griego-sintaxis.html","griego-subjuntivo.html","griego-subordinadas.html","griego-sustantivos.html","griego-verbo.html","griego.html","infinitivo.html","conjunciones.html","preposiciones.html"]);
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/æ/g,'ae').toLowerCase().replace(/ς/g,'σ').replace(/\s+/g,' ');
 const courseURL=(language,year,unit=1)=>`curso.html?lengua=${language}&curso=${year}${year==='1'?`&unidad=${unit}`:''}`;
 let curriculum,visibleSearch=[],requestId=0;
@@ -143,7 +144,7 @@ async function search(){
   if(ticket!==searchTicket)return;const words=q.split(/\s+/),scope=page==='curso.html'?data.filter(p=>p.language===selection.language):data;
   const hits=scope.filter(p=>norm(p.title+' '+p.text).includes(q)).sort((a,b)=>Number(norm(b.title).includes(q))-Number(norm(a.title).includes(q)));
   const message=document.createElement('p');message.textContent=hits.length?`${hits.length} temes trobats${limited?' en les unitats seleccionades':''}`:'No hi ha resultats en este recorregut.';results.append(message);
-  for(const hit of hits){const a=document.createElement('a');a.href=hit.url.startsWith('#')?hit.url:hit.url.startsWith('../')?hit.url:hit.url.startsWith('/')?hit.url:['infinitivo.html','conjunciones.html'].includes(hit.url.split('#')[0])?hit.url:'../'+hit.url;a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
+  for(const hit of hits){const a=document.createElement('a');a.href=hit.url.startsWith('#')?hit.url:hit.url.startsWith('../')?hit.url:hit.url.startsWith('/')?hit.url:valencianPages.has(hit.url.split('#')[0])?hit.url:'../'+hit.url;a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
    if(hit.url.startsWith('#'))a.addEventListener('click',()=>{const d=document.getElementById(hit.url.slice(1));if(d)d.open=true;results.hidden=true;});results.append(a);}
  }catch{results.textContent='No s’ha pogut carregar el buscador. Pots consultar els índexs.';}
 }
