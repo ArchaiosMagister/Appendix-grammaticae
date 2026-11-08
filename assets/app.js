@@ -47,7 +47,7 @@ async function resolveLatinTopic(topic){
    while(walk&&!walk.matches('h2')){if(walk.matches('.time-paradigms')){paradigm=walk;break;}walk=walk.nextElementSibling;}
    const active=paradigm?.querySelector('.table-wrap.verb-table');
    const sum=paradigm?.querySelectorAll('.table-wrap.verb-table')[2];
-   return '<h3>'+heading.textContent+'</h3>'+explanation+(active?active.outerHTML:'')+(sum?'<h4>Verbo sum</h4>'+sum.outerHTML:'');
+   return '<h3>'+heading.textContent+'</h3>'+explanation+(active?active.outerHTML:'')+(sum?'<h4>Verbo <i lang="la">sum, fui</i> – (irr.)</h4>'+sum.outerHTML.replace(/sum, esse, fui/g,'sum, fui – (irr.)'):'');
   });
   const introduction='<p><strong>Enunciado:</strong> <i lang="la">duco, duxi, ductum</i> (3.ª conjugación). <i lang="la">duco</i> proporciona el tema de presente <i lang="la">duc-</i>; <i lang="la">duxi</i>, el tema de perfecto <i lang="la">dux-</i> (al quitar <i lang="la">-i</i>); <i lang="la">ductum</i>, el tema de supino <i lang="la">duct-</i>. El tema de presente sirve para el presente, el pretérito imperfecto y el futuro imperfecto; el tema de perfecto sirve para perfecto, pluscuamperfecto y futuro perfecto activos; el de supino, para el participio de perfecto pasivo.</p><p><strong>Perfecto:</strong> <i lang="la">-i, -isti, -it, -imus, -istis, -erunt</i>. <strong>Pluscuamperfecto:</strong> <i lang="la">-eram, -eras, -erat, -eramus, -eratis, -erant</i>.</p>';
   return introduction+parts.join('');
@@ -73,11 +73,11 @@ async function resolveUnitParadigms(html){
   if(index<1)continue;
   const container=fragment.createElement('div');container.className='table-wrap verb-table';container.setAttribute('role','region');container.setAttribute('tabindex','0');
   const table=fragment.createElement('table');const caption=fragment.createElement('caption');caption.textContent='sum · '+time+' de indicativo';table.append(caption);
-  const thead=fragment.createElement('thead');thead.innerHTML='<tr><th scope="col">Persona</th><th scope="col">sum, esse, fui</th></tr>';table.append(thead);
+  const thead=fragment.createElement('thead');thead.innerHTML='<tr><th scope="col">Persona</th><th scope="col"><i lang="la">sum, fui</i> – (irr.)</th></tr>';table.append(thead);
   const tbody=fragment.createElement('tbody');
   for(const row of body){const tr=fragment.createElement('tr'),th=row.querySelector('th')?.cloneNode(true),cell=row.querySelectorAll('td')[index-1]?.cloneNode(true);if(th&&cell){tr.append(th,cell);tbody.append(tr);}}
   table.append(tbody);container.append(table);
-  const title=fragment.createElement('h4');title.textContent='Verbo sum · '+time;
+  const title=fragment.createElement('h4');title.textContent='Verbo sum, fui – (irr.) · '+time;
   const after=heading.nextElementSibling;after.after(title,container);
  }
  return main.innerHTML;
