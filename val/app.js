@@ -143,7 +143,7 @@ async function search(){
   if(ticket!==searchTicket)return;const words=q.split(/\s+/),scope=page==='curso.html'?data.filter(p=>p.language===selection.language):data;
   const hits=scope.filter(p=>norm(p.title+' '+p.text).includes(q)).sort((a,b)=>Number(norm(b.title).includes(q))-Number(norm(a.title).includes(q)));
   const message=document.createElement('p');message.textContent=hits.length?`${hits.length} temes trobats${limited?' en les unitats seleccionades':''}`:'No hi ha resultats en este recorregut.';results.append(message);
-  for(const hit of hits){const a=document.createElement('a');a.href=hit.url.startsWith('#')?hit.url:hit.url.startsWith('../')?hit.url:hit.url.startsWith('/')?hit.url:'../'+hit.url;a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
+  for(const hit of hits){const a=document.createElement('a');a.href=hit.url.startsWith('#')?hit.url:hit.url.startsWith('../')?hit.url:hit.url.startsWith('/')?hit.url:['infinitivo.html','conjunciones.html'].includes(hit.url.split('#')[0])?hit.url:'../'+hit.url;a.textContent=hit.title;const small=document.createElement('small');small.textContent=`${hit.language==='griego'?'Grec':'Llatí'}${hit.unit?` · Unitat ${hit.unit}`:''}`;a.append(small);
    if(hit.url.startsWith('#'))a.addEventListener('click',()=>{const d=document.getElementById(hit.url.slice(1));if(d)d.open=true;results.hidden=true;});results.append(a);}
  }catch{results.textContent='No s’ha pogut carregar el buscador. Pots consultar els índexs.';}
 }
