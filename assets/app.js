@@ -16,6 +16,44 @@ function updateSelectors(){for(const form of document.querySelectorAll('.course-
  }
 }
 function updateURL(){history.replaceState(null,'',courseURL(selection.language,selection.year,selection.unit));safeStorage.set(selection);}
+const chapterCache=new Map();
+async function getChapter(page){
+ if(!chapterCache.has(page))chapterCache.set(page,fetch(page).then(r=>{if(!r.ok)throw Error('No se pudo cargar '+page);return r.text();}).then(html=>new DOMParser().parseFromString(html,'text/html')).catch(e=>{chapterCache.delete(page);throw e;}));
+ return chapterCache.get(page);
+}
+function sectionHTML(doc,id){
+ const heading=doc.getElementById(id);if(!heading)throw Error('No existe el apartado '+id);
+ let out='',node=heading.nextElementSibling;
+ while(node&&!(node.matches('h2')||node.matches('section')&&node.querySelector(':scope > h2'))){out+=node.outerHTML;node=node.nextElementSibling;}
+ return out;
+}
+async function resolveLatinTopic(topic){
+ if(!topic.source)return topic.html;
+ const {page,section,mode}=topic.source,doc=await getChapter(page);
+ if(mode==='adjectives'){
+  const article=doc.querySelector('.article article');
+  const tables=[...article.querySelectorAll('.table-wrap')].filter(x=>/brevis|acer|audax|vetus/.test(x.querySelector('caption')?.textContent||''));
+  const explanatory=[...article.children].filter(x=>x.matches('p')&&(/Adjetivos de tres terminaciones tipo|Adjetivos de dos terminaciones tipo|Adjetivos de una terminación tipo|ablativo singular/.test(x.textContent)));
+  return explanatory.map(x=>x.outerHTML).join('')+tables.map(x=>x.outerHTML).join('');
+ }
+ if(mode==='perfect-tenses'){
+  const parts=['perfecto-de-indicativo','pluscuamperfecto-de-indicativo'].map(id=>{
+   const heading=doc.getElementById(id);if(!heading)throw Error('Falta '+id);
+   let node=heading.nextElementSibling,explanation='';
+   while(node&&!node.matches('h2')){if(node.matches('p'))explanation+=node.outerHTML;node=node.nextElementSibling;}
+   const section=heading.parentElement.querySelector('.time-paradigms');
+   // The sections are siblings of the time headings: find the section belonging to this heading.
+   let walk=heading.nextElementSibling,paradigm=null;
+   while(walk&&!walk.matches('h2')){if(walk.matches('.time-paradigms')){paradigm=walk;break;}walk=walk.nextElementSibling;}
+   const active=paradigm?.querySelector('.table-wrap.verb-table');
+   const sum=paradigm?.querySelectorAll('.table-wrap.verb-table')[2];
+   return '<h3>'+heading.textContent+'</h3>'+explanation+(active?active.outerHTML:'')+(sum?'<h4>Verbo sum</h4>'+sum.outerHTML:'');
+  });
+  const introduction='<p><strong>Enunciado:</strong> <i lang="la">duco, duxi, ductum</i> (3.ª conjugación). <i lang="la">duco</i> proporciona el tema de presente <i lang="la">duc-</i>; <i lang="la">duxi</i>, el tema de perfecto <i lang="la">dux-</i> (al quitar <i lang="la">-i</i>); <i lang="la">ductum</i>, el tema de supino <i lang="la">duct-</i>. El tema de perfecto sirve para perfecto, pluscuamperfecto y futuro perfecto activos; el de supino, para el participio de perfecto pasivo.</p><p><strong>Perfecto:</strong> <i lang="la">-i, -isti, -it, -imus, -istis, -erunt</i>. <strong>Pluscuamperfecto:</strong> <i lang="la">-eram, -eras, -erat, -eramus, -eratis, -erant</i>.</p>';
+  return introduction+parts.join('');
+ }
+ return sectionHTML(doc,section);
+}
 function stripHTML(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
 function addLink(parent,title,url,description){const a=document.createElement('a');a.href=url;a.className='path';const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=description;a.append(h,p);parent.append(a);}
 async function renderCourse(){
@@ -46,8 +84,8 @@ async function renderCourse(){
     // Current unit is open; previous material remains available in concise accordions.
     details.open=unit.number===selection.unit;
     const summary=document.createElement('summary'),label=document.createElement('span');label.className='eyebrow';label.textContent=topic.group;const title=document.createElement('span');title.className='lesson-title';title.textContent=topic.title;summary.append(label,title);
-    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.html;details.append(summary,body);section.append(details);
-    visibleSearch.push({title:topic.title,language:selection.language,text:stripHTML(topic.html),url:`#${details.id}`,unit:unit.number});
+    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.source&&selection.language==='latin'?await resolveLatinTopic(topic).catch(()=>topic.html):topic.html;if(ticket!==requestId)return;details.append(summary,body);section.append(details);
+    visibleSearch.push({title:topic.title,language:selection.language,text:stripHTML(body.innerHTML),url:`#${details.id}`,unit:unit.number});
    }content.append(section);
   }
   const note=document.createElement('p');note.className='course-note';note.textContent=`Mostrando las unidades 1–${selection.unit} de ${maxUnits(selection.language)}. Las unidades posteriores todavía no aparecen.`;content.append(note);
