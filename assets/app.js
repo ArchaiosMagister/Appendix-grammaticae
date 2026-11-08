@@ -19,6 +19,7 @@ function updateURL(){history.replaceState(null,'',courseURL(selection.language,s
 function stripHTML(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
 function addLink(parent,title,url,description){const a=document.createElement('a');a.href=url;a.className='path';const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=description;a.append(h,p);parent.append(a);}
 async function renderCourse(){
+ document.documentElement.dataset.language=selection.language;
  const ticket=++requestId,content=document.querySelector('#course-content');if(!content)return;
  const languageName=selection.language==='latin'?'Latín':'Griego';document.title=`${languageName} ${selection.year==='1'?'I':'II'} · Appendix grammaticæ`;
  document.querySelector('#course-title').textContent=`${languageName} ${selection.year==='1'?'I':'II'}`;updateSelectors();
