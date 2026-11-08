@@ -116,7 +116,7 @@ async function renderCourse(){
     // Current unit is open; previous material remains available in concise accordions.
     details.open=unit.number===selection.unit;
     const summary=document.createElement('summary'),label=document.createElement('span');label.className='eyebrow';label.textContent=topic.group;const title=document.createElement('span');title.className='lesson-title';title.textContent=topic.title;summary.append(label,title);
-    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.html;for(const a of body.querySelectorAll('a[href]')){const href=a.getAttribute('href');if(href&&!/^(?:#|https?:|mailto:|\/)/.test(href)&&!href.startsWith('../')&&!href.startsWith('val/'))a.setAttribute('href','../'+href);}if(ticket!==requestId)return;details.append(summary,body);section.append(details);
+    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.html;for(const a of body.querySelectorAll('a[href]')){const href=a.getAttribute('href');if(href&&!/^(?:#|https?:|mailto:|\/)/.test(href)&&!href.startsWith('../')&&!href.startsWith('val/')){const page=href.split('#')[0].split('?')[0];if(!valencianPages.has(page))a.setAttribute('href','../'+href);}}if(ticket!==requestId)return;details.append(summary,body);section.append(details);
     visibleSearch.push({title:topic.title,language:selection.language,text:stripHTML(body.innerHTML),url:`#${details.id}`,unit:unit.number});
    }content.append(section);
   }
