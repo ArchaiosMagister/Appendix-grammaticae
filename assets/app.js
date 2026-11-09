@@ -37,7 +37,8 @@ async function resolveLatinTopic(topic){
   const article=doc.querySelector('.article article');
   const tables=[...article.querySelectorAll('.table-wrap')].filter(x=>/brevis|acer|audax|vetus/.test(x.querySelector('caption')?.textContent||''));
   const explanatory=[...article.children].filter(x=>x.matches('p')&&(/Adjetivos de tres terminaciones tipo|Adjetivos de dos terminaciones tipo|Adjetivos de una terminación tipo|ablativo singular/.test(x.textContent)));
-  return explanatory.map(x=>x.outerHTML).join('')+tables.map(x=>x.outerHTML).join('');
+  const order=x=>{const t=(x.querySelector?.('caption')?.textContent||x.textContent||'').toLowerCase();return /acer|tres terminaciones/.test(t)?0:/brevis|dos terminaciones/.test(t)?1:2;};
+  return [...explanatory,...tables].sort((a,b)=>order(a)-order(b)).map(x=>x.outerHTML).join('');
  }
  if(mode==='perfect-tenses'){
   const parts=['perfecto-de-indicativo','pluscuamperfecto-de-indicativo'].map(id=>{
