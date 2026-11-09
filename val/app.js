@@ -88,6 +88,41 @@ async function resolveUnitParadigms(html){
 }
 function stripHTML(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
 function addLink(parent,title,url,description){const a=document.createElement('a');a.href=url;a.className='path';const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=description;a.append(h,p);parent.append(a);}
+
+function addGuidedDoubts(details,body,topic){
+ const val=document.documentElement.lang.toLowerCase().startsWith('ca');
+ const tr=(es,ca)=>val?ca:es;
+ const wrap=document.createElement('div');wrap.className='guided-doubts';
+ const button=document.createElement('button');button.type='button';button.className='guided-trigger';button.textContent=tr('¿Dudas específicas?','Dubtes específics?');button.setAttribute('aria-expanded','false');
+ const panel=document.createElement('div');panel.className='guided-panel';panel.hidden=true;
+ const heading=document.createElement('p');heading.className='guided-heading';heading.textContent=tr('¿Qué necesitas aclarar sobre «'+topic.title+'»?','Què necessites aclarir sobre «'+topic.title+'»?');
+ const select=document.createElement('select');select.setAttribute('aria-label',tr('Tipo de duda','Tipus de dubte'));
+ for(const [key,es,ca] of [['explain','Entender la explicación','Entendre l’explicació'],['forms','Consultar formas y tablas','Consultar formes i taules'],['examples','Ver ejemplos','Veure exemples'],['syntax','Entender cómo se analiza','Entendre com s’analitza']]){const opt=document.createElement('option');opt.value=key;opt.textContent=tr(es,ca);select.append(opt);}
+ const submit=document.createElement('button');submit.type='button';submit.textContent=tr('Mostrar respuesta','Mostra la resposta');
+ const result=document.createElement('div');result.className='guided-result';result.setAttribute('role','status');result.setAttribute('aria-live','polite');
+ const note=document.createElement('small');note.textContent=tr('Respuestas extraídas del contenido de esta lección; no es un chat con IA.','Respostes extretes del contingut d’esta lliçó; no és un xat amb IA.');
+ panel.append(heading,select,submit,result,note);wrap.append(button,panel);
+ button.addEventListener('click',()=>{panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)select.focus();});
+ submit.addEventListener('click',()=>{
+  const nodes=[...body.children].filter(x=>x.matches('p,div.table-wrap,table,ul,ol,h3,h4'));
+  const paragraphs=nodes.filter(x=>x.matches('p')&&x.textContent.trim().length>35);
+  const tables=nodes.filter(x=>x.matches('div.table-wrap,table'));
+  const examples=paragraphs.filter(x=>x.querySelector('i[lang="la"],i[lang="grc"]')||/exempl|ejempl|παράδειγμα/i.test(x.textContent));
+  const syntax=paragraphs.filter(x=>/subject|sujeto|subordin|complement|atribut|predicat|funci[oó]|caso|cas\b|oraci[oó]n|oraci[oó]|acusativ|ablativ|dativ|genitiv/i.test(x.textContent));
+  let chosen=[];
+  if(select.value==='forms')chosen=tables.slice(0,2);
+  else if(select.value==='examples')chosen=examples.slice(0,3);
+  else if(select.value==='syntax')chosen=syntax.slice(0,3);
+  else chosen=paragraphs.slice(0,3);
+  result.replaceChildren();
+  if(!chosen.length){const p=document.createElement('p');p.textContent=tr('Esta lección no contiene una respuesta específica de ese tipo. Prueba otra opción o consulta el apartado completo.','Esta lliçó no conté una resposta específica d’este tipus. Prova una altra opció o consulta l’apartat complet.');result.append(p);return;}
+  const title=document.createElement('strong');title.textContent=tr('En esta lección:','En esta lliçó:');result.append(title);
+  for(const node of chosen)result.append(node.cloneNode(true));
+ });
+ details.append(wrap);
+}
+
+const guidedStyle=document.createElement('style');guidedStyle.textContent='.guided-doubts{margin:1.5rem 0 0;border-top:1px solid var(--line);padding-top:1rem}.guided-trigger,.guided-panel button{cursor:pointer;border:1px solid var(--green);border-radius:5px;padding:.55rem .9rem;background:transparent;color:var(--green);font:600 .9rem system-ui}.guided-panel{margin-top:.9rem;padding:1rem;border:1px solid var(--line);border-radius:8px;background:var(--paper)}.guided-panel[hidden]{display:none}.guided-heading{margin:0 0 .75rem}.guided-panel select{display:block;width:min(100%,420px);padding:.55rem;margin-bottom:.7rem;background:var(--paper);color:var(--ink);border:1px solid var(--line)}.guided-result{margin:1rem 0;overflow-x:auto}.guided-result .table-wrap{max-width:100%}.guided-panel small{display:block;color:var(--muted)}';document.head.append(guidedStyle);
 async function renderCourse(){
  document.documentElement.dataset.language=selection.language;
  const ticket=++requestId,content=document.querySelector('#course-content');if(!content)return;
@@ -116,7 +151,7 @@ async function renderCourse(){
     // Current unit is open; previous material remains available in concise accordions.
     details.open=unit.number===selection.unit;
     const summary=document.createElement('summary'),label=document.createElement('span');label.className='eyebrow';label.textContent=topic.group;const title=document.createElement('span');title.className='lesson-title';title.textContent=topic.title;summary.append(label,title);
-    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.html;for(const a of body.querySelectorAll('a[href]')){const href=a.getAttribute('href');if(href&&!/^(?:#|https?:|mailto:|\/)/.test(href)&&!href.startsWith('../')&&!href.startsWith('val/')){const page=href.split('#')[0].split('?')[0];if(!valencianPages.has(page))a.setAttribute('href','../'+href);}}if(ticket!==requestId)return;details.append(summary,body);section.append(details);
+    const body=document.createElement('div');body.className=`lesson-body ${selection.language==='griego'?'greek-content':''}`;body.innerHTML=topic.html;for(const a of body.querySelectorAll('a[href]')){const href=a.getAttribute('href');if(href&&!/^(?:#|https?:|mailto:|\/)/.test(href)&&!href.startsWith('../')&&!href.startsWith('val/')){const page=href.split('#')[0].split('?')[0];if(!valencianPages.has(page))a.setAttribute('href','../'+href);}}if(ticket!==requestId)return;details.append(summary,body);addGuidedDoubts(details,body,topic);section.append(details);
     visibleSearch.push({title:topic.title,language:selection.language,text:stripHTML(body.innerHTML),url:`#${details.id}`,unit:unit.number});
    }content.append(section);
   }
