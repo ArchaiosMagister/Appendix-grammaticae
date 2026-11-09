@@ -138,7 +138,7 @@
           {
             "title": "Verbs deponents",
             "group": "Morfologia",
-            "html": "<p>Els <strong>verbs deponents</strong> presenten un <strong>paradigma morfològic passiu</strong>, però tenen <strong>significat i traducció actius</strong>: <i lang=\"la\">sequor</i> («seguisc»), <i lang=\"la\">sequeris</i> («seguixes»), <i lang=\"la\">sequitur</i> («seguix»).</p><p>El seu <strong>enunciat</strong> permet identificar-los i determinar-ne la conjugació: <i lang=\"la\">hortor, hortaris, hortari</i> (1a); <i lang=\"la\">vereor, vereris, vereri</i> (2a); <i lang=\"la\">sequor, sequeris, sequi</i> (3a); <i lang=\"la\">patior, pateris, pati</i> (mixta); <i lang=\"la\">partior, partiris, partiri</i> (4a). A diferència dels verbs actius, la primera forma de l'enunciat acaba en <i lang=\"la\">-or</i>, i l'infinitiu té forma passiva. No s'han de traduir com a passius.</p>"
+            "html": "<p>Els <strong>verbs deponents</strong> presenten un <strong>paradigma morfològic passiu</strong>, però tenen <strong>significat i traducció actius</strong>: <i lang=\"la\">sequor</i> («seguisc»), <i lang=\"la\">sequeris</i> («seguixes»), <i lang=\"la\">sequitur</i> («seguix»).</p><p>El seu <strong>enunciat</strong> permet identificar-los i determinar-ne la conjugació: <i lang=\"la\">hortor, hortaris, hortari</i> (1a); <i lang=\"la\">vereor, vereris, vereri</i> (2a); <i lang=\"la\">sequor, sequeris, sequi</i> (3a); <i lang=\"la\">patior, pateris, pati</i> (mixta); <i lang=\"la\">orior, oriris, oriri</i> (4a). L'infinitiu presenta la terminació passiva corresponent. En esta unitat s'estudien les formes del sistema de present, sense introduir encara els participis.</p>"
           },
           {
             "group": "Morfologia verbal",
