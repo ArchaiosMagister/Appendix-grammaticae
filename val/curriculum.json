@@ -1,6 +1,6 @@
 {
   "latin": {
-    "name": "Latín",
+    "name": "Llatí",
     "units": [
       {
         "number": 1,
@@ -205,7 +205,7 @@
     ]
   },
   "griego": {
-    "name": "Griego",
+    "name": "Grec",
     "units": [
       {
         "number": 1,
