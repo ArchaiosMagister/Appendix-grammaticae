@@ -1,0 +1,28 @@
+name: Publicar versión estable v1.0.0
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Crear etiqueta y publicación de la versión 1.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh release view v1.0.0 >/dev/null 2>&1; then
+            echo "La versión v1.0.0 ya está publicada."
+            exit 0
+          fi
+          gh release create v1.0.0 \
+            --target a90f6d0b9b2ce28495fb94373deaa8d208902da1 \
+            --title "Appendix grammaticae 1.0" \
+            --notes "Primera versión estable de Appendix grammaticae.\n\n- Gramática latina y griega organizada por cursos y unidades, con apartados de morfología y sintaxis.\n- Versiones en castellano y valenciano.\n- Paradigmas, ejemplos y explicaciones revisados para el uso docente.\n- Diseño adaptable a móviles y mejoras para iPhone.\n- Comprobaciones automáticas antes de publicar en GitHub Pages.\n\nLa etiqueta señala el estado estable del 10 de noviembre de 2026. Las futuras correcciones podrán añadirse sin modificar esta versión."
