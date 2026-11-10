@@ -8,7 +8,7 @@ selection.unit=Math.max(1,Math.min(maxUnits(selection.language),parseInt(params.
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/æ/g,'ae').toLowerCase().replace(/ς/g,'σ').replace(/\s+/g,' ');
 const courseURL=(language,year,unit=1)=>`curso.html?lengua=${language}&curso=${year}${year==='1'?`&unidad=${unit}`:''}`;
 let curriculum,visibleSearch=[],requestId=0;
-async function loadJSON(url){const r=await fetch(url);if(!r.ok)throw Error('No se pudo cargar');return r.json();}
+async function loadJSON(url){const r=await fetch(url,{cache:'no-cache'});if(!r.ok)throw Error('No se pudo cargar');return r.json();}
 function updateSelectors(){for(const form of document.querySelectorAll('.course-selector')){form.elements.lengua.value=selection.language;form.elements.curso.value=selection.year;}
 
  const nav=document.querySelector('header nav');
@@ -109,7 +109,7 @@ async function renderCourse(){
   const button=document.createElement('button');button.type='button';button.textContent=`Unidad ${u}`;button.setAttribute('aria-pressed',String(u===selection.unit));button.dataset.unit=u;
   button.addEventListener('click',()=>{selection.unit=u;updateURL();renderCourse();});buttons.append(button);
  }
- try{curriculum??=await loadJSON('assets/curriculum.json');if(ticket!==requestId)return;
+ try{curriculum??=await loadJSON('assets/curriculum.json?v=20261110-final1');if(ticket!==requestId)return;
   for(const unit of curriculum[selection.language].units.filter(u=>u.number<=selection.unit)){
    const section=document.createElement('section');section.className='unit-section';const h2=document.createElement('h2');h2.textContent=`Unidad ${unit.number}`;h2.id=`unidad-${unit.number}`;section.append(h2);
    for(let j=0;j<unit.topics.length;j++){
@@ -141,7 +141,7 @@ const input=document.querySelector('#search'),results=document.querySelector('#r
 async function search(){
  const q=norm(input.value.trim()),ticket=++searchTicket;results.replaceChildren();results.hidden=!q;if(!q)return;
  try{
-  const limited=page==='curso.html'&&selection.year==='1';const data=limited?visibleSearch:(searchIndex??=await loadJSON('assets/search-data.json'));
+  const limited=page==='curso.html'&&selection.year==='1';const data=limited?visibleSearch:(searchIndex??=await loadJSON('assets/search-data.json?v=20261110-final1'));
   if(ticket!==searchTicket)return;const words=q.split(/\s+/),scope=page==='curso.html'?data.filter(p=>p.language===selection.language):data;
   const hits=scope.filter(p=>norm(p.title+' '+p.text).includes(q)).sort((a,b)=>Number(norm(b.title).includes(q))-Number(norm(a.title).includes(q)));
   const message=document.createElement('p');message.textContent=hits.length?`${hits.length} temas encontrados${limited?' en las unidades seleccionadas':''}`:'No hay resultados en este recorrido.';results.append(message);
