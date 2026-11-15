@@ -18,3 +18,25 @@
  header .language-picker select{max-width:none;min-width:115px;font-size:14px;min-height:40px}
 }
 @media(max-width:420px){header .language-picker select{max-width:none;font-size:14px}}
+
+/* Conjunciones: cursiva latina claramente distinguible en la tarjeta y la guía,
+   sin modificar las traducciones castellanas ni valencianas. */
+.conjunction-card i[lang="la"],
+.conjunction-guide i[lang="la"] {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+
+/* Sintaxis latina: las oraciones completas se reconocen como latín,
+   y el guion ayuda a localizar cada tipo y subtipo sin cambiar el texto. */
+.subordinate-chapter i[lang="la"] {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+.subordinate-chapter .subordinate-type {
+  margin-top: 30px;
+}
+.subordinate-chapter .subordinate-item {
+  padding-left: 1.25em;
+  text-indent: -1.25em;
+}
