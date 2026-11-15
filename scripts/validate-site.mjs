@@ -80,6 +80,66 @@ for (const file of ['index.html', 'curso.html', 'val/index.html', 'val/curso.htm
   if (exists(file)) checkHTMLLinks(file);
 }
 
+
+function checkDocumentedVocatives() {
+  function findRow(html, marker, label) {
+    const start = html.indexOf(marker);
+    if (start < 0) return null;
+    const fragment = html.slice(start);
+    const pattern = new RegExp('<tr><th scope="row">' + label + '<\\/th>([\\s\\S]*?)<\\/tr>');
+    return fragment.match(pattern)?.[1] ?? null;
+  }
+  function latin(html, file, label) {
+    const row = findRow(html, '<caption>acer, acris, acre', label);
+    if (!row) { fail(file + ': falta el vocativo de acer'); return; }
+    const cells = [...row.matchAll(new RegExp('<td><i lang="la">([^<]+)</i></td>', 'g'))].map(m => m[1]);
+    const expected = ['acer', 'acris', 'acre', 'acres', 'acres', 'acria'];
+    if (JSON.stringify(cells) !== JSON.stringify(expected)) {
+      fail(file + ': vocativo de acer incorrecto: ' + cells.join(', '));
+    }
+  }
+  function greek(html, file, label) {
+    const row = findRow(html, 'ἐλπίς, ἐλπίδος', '<strong>' + label + '</strong>');
+    if (!row) { fail(file + ': falta el vocativo de ἐλπίς'); return; }
+    const first = row.split('</td>')[0].replace(/^<td>/, '');
+    if (first !== 'ἐλπί<sup>*</sup>') fail(file + ': vocativo singular de ἐλπίς incorrecto: ' + first);
+    const explanation = label === 'Vocativo' ? '* Excepción:' : '* Excepció:';
+    if (!html.includes('<strong>' + explanation + '</strong>') ||
+        !html.includes('temas en –ιδ') && !html.includes('temes en –ιδ')) {
+      fail(file + ': falta la explicación de los temas en -ιδ');
+    }
+    if (!row.includes('ἐλπίδ<strong>ες</strong>')) {
+      fail(file + ': el vocativo plural de ἐλπίς se ha alterado');
+    }
+  }
+  latin(read('adjetivos.html'), 'adjetivos.html', 'Vocativo');
+  latin(read('val/adjetivos.html'), 'val/adjetivos.html', 'Vocatiu');
+  greek(read('griego-sustantivos.html'), 'griego-sustantivos.html', 'Vocativo');
+  greek(read('val/griego-sustantivos.html'), 'val/griego-sustantivos.html', 'Vocatiu');
+  if (curricula.val) {
+    const topic = curricula.val.latin.units.flatMap(u => u.topics).find(t => t.html?.includes('<caption>acer, acris, acre'));
+    if (topic) latin(topic.html, 'val/curriculum.json', 'Vocatiu');
+    else fail('val/curriculum.json: falta el paradigma de acer');
+  }
+  for (const [lang, file, label] of [['es', 'assets/curriculum.json', 'Vocativo'], ['val', 'val/curriculum.json', 'Vocatiu']]) {
+    const topic = curricula[lang]?.griego?.units.flatMap(u => u.topics).find(t => t.html?.includes('ἐλπίς, ἐλπίδος'));
+    if (topic) greek(topic.html, file, label);
+    else fail(file + ': falta el paradigma de ἐλπίς');
+  }
+  for (const [file, label] of [['assets/search-data.json', 'Vocativo'], ['val/search-data.json', 'Vocatiu']]) {
+    const data = JSON.parse(read(file));
+    const entry = data.find(item => item.url === 'griego-sustantivos.html');
+    if (!entry?.text.includes(label + ' ἐλπί* ἐλπίδ ες')) {
+      fail(file + ': el índice de búsqueda no refleja ἐλπί');
+    }
+  }
+  const valSearch = JSON.parse(read('val/search-data.json'));
+  if (!valSearch.find(item => item.url === 'adjetivos.html')?.text.includes('Vocatiu acer acris acre')) {
+    fail('val/search-data.json: el índice de búsqueda no refleja acer');
+  }
+}
+if (required.every(exists)) checkDocumentedVocatives();
+
 if (errors.length) {
   console.error('Validación fallida (' + errors.length + ' error/es):');
   for (const error of errors) console.error(' - ' + error);
