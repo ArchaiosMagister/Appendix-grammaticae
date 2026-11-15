@@ -24,6 +24,8 @@ jobs:
           node-version: '22'
       - name: Comprobar gramática
         run: node scripts/validate-site.mjs
+      - name: Verificar vocativos grecolatinos en ambas lenguas
+        run: node scripts/test-vocativos-filologia.mjs
 
   deploy:
     name: Publicar GitHub Pages
