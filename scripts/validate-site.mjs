@@ -257,7 +257,7 @@ function checkSubordinateTypography() {
     const end = html.indexOf('<div class="related">', start);
     const article = html.slice(start, end);
     for (const p of article.matchAll(/<p[^>]*>[\s\S]*?<\/p>/g)) {
-      if (/Ejemplo:|Exemple:/.test(p[0]) && !p[0].includes('<i lang="la">')) {
+      if (/Ejemplo:|Exemple:/.test(p[0]) && !p[0].includes('<i lang="la">') && !/(?:Ejemplo|Exemple):<\/p>$/.test(p[0])) {
         fail(file + ': ejemplo sin cursiva: ' + p[0].slice(0, 80));
       }
     }
