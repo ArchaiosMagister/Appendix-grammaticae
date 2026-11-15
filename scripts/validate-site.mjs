@@ -101,7 +101,7 @@ function checkDocumentedVocatives() {
   function greek(html, file, label) {
     const row = findRow(html, 'ἐλπίς, ἐλπίδος', '<strong>' + label + '</strong>');
     if (!row) { fail(file + ': falta el vocativo de ἐλπίς'); return; }
-    const first = row.match(new RegExp('^<td>([^<]+)</td>'))?.[1];
+    const first = row.split('</td>')[0].replace(/^<td>/, '');
     if (first !== 'ἐλπί<sup>*</sup>') fail(file + ': vocativo singular de ἐλπίς incorrecto: ' + first);
     const explanation = label === 'Vocativo' ? '* Excepción:' : '* Excepció:';
     if (!html.includes('<strong>' + explanation + '</strong>') ||
