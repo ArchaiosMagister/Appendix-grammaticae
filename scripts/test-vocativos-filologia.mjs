@@ -13,7 +13,7 @@ for(const [prefix,voc] of [['','Vocativo'],['val/','Vocatiu']]){
  assert(elpis.includes('<strong>'+voc+'</strong></th><td>ἐλπί</td><td>ἐλπίδ<strong>ες</strong></td>'),prefix+'vocativo griego incorrecto');
  assert(elpis.includes('<strong>'+(prefix?'Nominatiu':'Nominativo')+'</strong></th><td>ἐλπί<strong>ς</strong> (–δς)</td>'),prefix+'se alteró nominativo de ἐλπίς');
  const data=JSON.parse(read(prefix+(prefix?'curriculum.json':'assets/curriculum.json')));
- const topic=data.griego.units.find(u=>u.number===8).topics.find(t=>t.html.includes('Temas en oclusiva · tabla 113'));
+ const topic=data.griego.units.find(u=>u.number===8).topics.find(t=>t.html.includes(prefix?'Temes en oclusiva · taula 113':'Temas en oclusiva · tabla 113'));
  assert(topic,'Tabla 113 ausente en '+prefix);
  assert(topic.html.includes('<strong>'+voc+'</strong></th><td>ἐλπί</td><td>ἐλπίδ<strong>ες</strong></td>'),prefix+'currículo: vocativo singular incoherente');
  assert(topic.html.includes('<strong>'+(prefix?'Nominatiu':'Nominativo')+'</strong></th><td>ἐλπί<strong>ς</strong> (–δς)</td>'),prefix+'currículo: nominativo alterado');
