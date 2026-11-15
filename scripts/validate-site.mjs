@@ -92,7 +92,7 @@ function checkDocumentedVocatives() {
   function latin(html, file, label) {
     const row = findRow(html, '<caption>acer, acris, acre', label);
     if (!row) { fail(file + ': falta el vocativo de acer'); return; }
-    const cells = [...row.matchAll(/<td><i lang="la">([^<]+)<\\/i><\\/td>/g)].map(m => m[1]);
+    const cells = [...row.matchAll(new RegExp('<td><i lang="la">([^<]+)</i></td>', 'g'))].map(m => m[1]);
     const expected = ['acer', 'acris', 'acre', 'acres', 'acres', 'acria'];
     if (JSON.stringify(cells) !== JSON.stringify(expected)) {
       fail(file + ': vocativo de acer incorrecto: ' + cells.join(', '));
@@ -101,7 +101,7 @@ function checkDocumentedVocatives() {
   function greek(html, file, label) {
     const row = findRow(html, 'ἐλπίς, ἐλπίδος', '<strong>' + label + '</strong>');
     if (!row) { fail(file + ': falta el vocativo de ἐλπίς'); return; }
-    const first = row.match(/^<td>([^<]+)<\\/td>/)?.[1];
+    const first = row.match(new RegExp('^<td>([^<]+)</td>'))?.[1];
     if (first !== 'ἐλπί') fail(file + ': vocativo singular de ἐλπίς incorrecto: ' + first);
     if (!row.includes('ἐλπίδ<strong>ες</strong>')) {
       fail(file + ': el vocativo plural de ἐλπίς se ha alterado');
