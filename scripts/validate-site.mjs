@@ -196,22 +196,22 @@ function checkConjunctionItalics() {
     const guideFile = prefix + 'conjunciones.html';
     const syntax = read(syntaxFile);
     const guide = read(guideFile);
-    const card = syntax.match(/<a class="card conjunction-card" href="conjunciones\\.html">([\\s\\S]*?)<\\/a>/)?.[1];
+    const card = syntax.match(/<a class="card conjunction-card" href="conjunciones\.html">([\s\S]*?)<\/a>/)?.[1];
     if (!card) { fail(syntaxFile + ': falta la tarjeta de conjunciones'); continue; }
     if (!guide.includes('<div class="article conjunction-guide">')) {
       fail(guideFile + ': falta aplicar el estilo de cursiva a la guía');
     }
-    const lede = guide.match(/<p class="lede">([\\s\\S]*?)<\\/p>/)?.[1] || '';
+    const lede = guide.match(/<p class="lede">([\s\S]*?)<\/p>/)?.[1] || '';
     for (const nexo of ['ut', 'cum', 'ne', 'quod', 'si', 'dum']) {
       const italics = '<i lang="la">' + nexo + '</i>';
       if (!card.includes(italics)) fail(syntaxFile + ': falta la cursiva de ' + nexo);
       if (!lede.includes(italics)) fail(guideFile + ': falta la cursiva introductoria de ' + nexo);
     }
     const article = guide.split('<article>')[1]?.split('</article>')[0] || '';
-    const heads = [...article.matchAll(/<th scope="row">([\\s\\S]*?)<\\/th>/g)].map(m => m[1]);
+    const heads = [...article.matchAll(/<th scope="row">([\s\S]*?)<\/th>/g)].map(m => m[1]);
     if (heads.length !== 13) fail(guideFile + ': se esperaban 13 filas de nexos');
     for (const h of heads) {
-      const rest = h.replace(/<i lang="la">[^<]*<\\/i>/g, '').replace(/[\\s,\\/]/g, '');
+      const rest = h.replace(/<i lang="la">[^<]*<\/i>/g, '').replace(/[\s,\/]/g, '');
       if (rest) fail(guideFile + ': nexo sin cursiva en cabecera: ' + rest);
     }
     for (const nexo of ['tam', 'tantus', 'talis', 'ut non', 'nisi', 'quia', 'qui', 'quæ']) {
