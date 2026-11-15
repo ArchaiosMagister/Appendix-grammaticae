@@ -102,7 +102,12 @@ function checkDocumentedVocatives() {
     const row = findRow(html, 'ἐλπίς, ἐλπίδος', '<strong>' + label + '</strong>');
     if (!row) { fail(file + ': falta el vocativo de ἐλπίς'); return; }
     const first = row.match(new RegExp('^<td>([^<]+)</td>'))?.[1];
-    if (first !== 'ἐλπί') fail(file + ': vocativo singular de ἐλπίς incorrecto: ' + first);
+    if (first !== 'ἐλπί<sup>*</sup>') fail(file + ': vocativo singular de ἐλπίς incorrecto: ' + first);
+    const explanation = label === 'Vocativo' ? '* Excepción:' : '* Excepció:';
+    if (!html.includes('<strong>' + explanation + '</strong>') ||
+        !html.includes('temas en –ιδ') && !html.includes('temes en –ιδ')) {
+      fail(file + ': falta la explicación de los temas en -ιδ');
+    }
     if (!row.includes('ἐλπίδ<strong>ες</strong>')) {
       fail(file + ': el vocativo plural de ἐλπίς se ha alterado');
     }
@@ -124,7 +129,7 @@ function checkDocumentedVocatives() {
   for (const [file, label] of [['assets/search-data.json', 'Vocativo'], ['val/search-data.json', 'Vocatiu']]) {
     const data = JSON.parse(read(file));
     const entry = data.find(item => item.url === 'griego-sustantivos.html');
-    if (!entry?.text.includes(label + ' ἐλπί ἐλπίδ ες')) {
+    if (!entry?.text.includes(label + ' ἐλπί* ἐλπίδ ες')) {
       fail(file + ': el índice de búsqueda no refleja ἐλπί');
     }
   }
