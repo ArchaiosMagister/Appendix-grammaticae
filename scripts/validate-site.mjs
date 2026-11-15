@@ -140,6 +140,49 @@ function checkDocumentedVocatives() {
 }
 if (required.every(exists)) checkDocumentedVocatives();
 
+
+function checkLatinNexusIndex() {
+  const profiles = [
+    { prefix: '', search: 'assets/search-data.json', title: 'Subordinadas por nexo' },
+    { prefix: 'val/', search: 'val/search-data.json', title: 'Subordinades per nexe' }
+  ];
+  let referenceNexuses = null;
+  for (const profile of profiles) {
+    const chapterFile = profile.prefix + 'subordinadas.html';
+    const chapter = read(chapterFile);
+    const index = read(profile.prefix + 'sintaxis.html');
+    const guide = read(profile.prefix + 'conjunciones.html');
+    const start = chapter.indexOf('<h2 id="por-nexo">');
+    const end = chapter.indexOf('<h2 id="sustantivas">');
+    if (start < 0 || end < start) { fail(chapterFile + ': falta la consulta por nexo'); continue; }
+    const section = chapter.slice(start, end);
+    if (!section.includes(profile.title)) fail(chapterFile + ': título de la consulta incorrecto');
+    const nexuses = [...section.matchAll(/<tr><th scope="row">([\s\S]*?)<\/th>/g)]
+      .map(match => match[1].replace(/<[^>]+>/g, '').trim());
+    if (nexuses.length !== 15) fail(chapterFile + ': se esperaban 15 grupos de nexos');
+    if (referenceNexuses !== null && JSON.stringify(referenceNexuses) !== JSON.stringify(nexuses)) {
+      fail(chapterFile + ': nexos desincronizados respecto del castellano');
+    }
+    referenceNexuses = nexuses;
+    for (const match of section.matchAll(/href="#([^"]+)"/g)) {
+      if (!chapter.includes('id="' + match[1] + '"')) fail(chapterFile + ': falta el destino #' + match[1]);
+    }
+    for (const word of ['ut', 'ne', 'cum', 'nisi', 'quominus']) {
+      if (!section.includes('<i lang="la">' + word + '</i>')) fail(chapterFile + ': falta la cursiva de ' + word);
+    }
+    if (!index.includes('href="subordinadas.html#por-nexo"')) {
+      fail(profile.prefix + 'sintaxis.html: falta la tarjeta de nexos');
+    }
+    if (!guide.includes('href="subordinadas.html#por-nexo"')) {
+      fail(profile.prefix + 'conjunciones.html: falta el enlace a la clasificación por nexos');
+    }
+    const search = JSON.parse(read(profile.search));
+    const entry = search.find(item => item.url === 'subordinadas.html');
+    if (!entry?.text.includes(profile.title)) fail(profile.search + ': falta indexar la consulta por nexo');
+  }
+}
+if (required.every(exists)) checkLatinNexusIndex();
+
 if (errors.length) {
   console.error('Validación fallida (' + errors.length + ' error/es):');
   for (const error of errors) console.error(' - ' + error);
