@@ -13,6 +13,12 @@ for(const [prefix,voc] of [['','Vocativo'],['val/','Vocatiu']]){
  assert(elpis.includes('<strong>'+voc+'</strong></th><td>ἐλπί</td><td>ἐλπίδ<strong>ες</strong></td>'),prefix+'vocativo griego incorrecto');
  assert(elpis.includes('<strong>'+(prefix?'Nominatiu':'Nominativo')+'</strong></th><td>ἐλπί<strong>ς</strong> (–δς)</td>'),prefix+'se alteró nominativo de ἐλπίς');
  const data=JSON.parse(read(prefix+(prefix?'curriculum.json':'assets/curriculum.json')));
+ if(prefix){
+  const unit5=data.latin.units.find(u=>u.number===5).topics[0].html;
+  assert(unit5.includes('<i lang="la">acer</i></td><td><i lang="la">acris</i></td>'),
+   'La tabla curricular valenciana de acer no se actualizó');
+  assert(adj.includes(unit5),'La lección valenciana no coincide con el capítulo fuente actualizado');
+ }
  const topic=data.griego.units.find(u=>u.number===8).topics.find(t=>t.html.includes(prefix?'Temes en oclusiva · taula 113':'Temas en oclusiva · tabla 113'));
  assert(topic,'Tabla 113 ausente en '+prefix);
  assert(topic.html.includes('<strong>'+voc+'</strong></th><td>ἐλπί</td><td>ἐλπίδ<strong>ες</strong></td>'),prefix+'currículo: vocativo singular incoherente');
