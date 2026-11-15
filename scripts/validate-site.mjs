@@ -221,6 +221,50 @@ function checkConjunctionItalics() {
 }
 if (required.every(exists)) checkConjunctionItalics();
 
+
+function checkSubordinateTypography() {
+  const css = read('assets/style.css');
+  if (!css.includes('.subordinate-chapter i[lang="la"]') ||
+      !css.includes('.subordinate-chapter .subordinate-item')) {
+    fail('Faltan estilos para las cursivas y los guiones de subordinadas');
+  }
+  for (const prefix of ['', 'val/']) {
+    const file = prefix + 'subordinadas.html';
+    const html = read(file);
+    if (!html.includes('<div class="article subordinate-chapter">')) {
+      fail(file + ': falta la clase de sintaxis');
+    }
+    const paragraphTypes = [...html.matchAll(/<p id="([^"]+)" class="subordinate-type"><strong>– ([^<]+)<\/strong>/g)];
+    const expected = ['temporales', 'modales', 'causales', 'finales', 'consecutivas', 'concesivas', 'condicionales'];
+    if (JSON.stringify(paragraphTypes.map(m => m[1])) !== JSON.stringify(expected)) {
+      fail(file + ': falta un subtipo adverbial o su guion');
+    }
+    const subtypeCount = (html.match(/class="subordinate-item">– /g) || []).length;
+    if (subtypeCount !== 22) fail(file + ': se esperaban 22 guiones de subtipos, hay ' + subtypeCount);
+    for (const latin of [
+      'si habeo… do',
+      'si habeam / habuerim… dem',
+      'si haberem… darem / si habuissem… dedissem',
+      'erras si id credis',
+      'si civem meum in servitutem videam, nequiquam Capitolium servaverim',
+      'si equus esses, esses indomabilis'
+    ]) {
+      if (!html.includes('<i lang="la">' + latin + '</i>')) {
+        fail(file + ': falta la cursiva de la oración o fórmula ' + latin);
+      }
+    }
+    const start = html.indexOf('<h2 id="sustantivas">');
+    const end = html.indexOf('<div class="related">', start);
+    const article = html.slice(start, end);
+    for (const p of article.matchAll(/<p[^>]*>[\s\S]*?<\/p>/g)) {
+      if (/Ejemplo:|Exemple:/.test(p[0]) && !p[0].includes('<i lang="la">')) {
+        fail(file + ': ejemplo sin cursiva: ' + p[0].slice(0, 80));
+      }
+    }
+  }
+}
+if (required.every(exists)) checkSubordinateTypography();
+
 if (errors.length) {
   console.error('Validación fallida (' + errors.length + ' error/es):');
   for (const error of errors) console.error(' - ' + error);
