@@ -4,3 +4,29 @@ apply();document.addEventListener('DOMContentLoaded',()=>{apply();const picker=d
 if(media.addEventListener)media.addEventListener('change',()=>{if(mode==='system')apply();});
 window.addEventListener('storage',event=>{if(event.key===key){mode=['system','light','dark'].includes(event.newValue)?event.newValue:'system';apply();}});
 })();
+
+/* SCHOLA_LEGACY_NOTICE_V1: aviso informativo; no redirecciones ni almacenamiento. */
+(()=>{'use strict';
+ const prefix='/Appendix-grammaticae/';
+ if(!location.pathname.startsWith(prefix))return;
+ document.addEventListener('DOMContentLoaded',()=>{
+  const header=document.querySelector('header');
+  if(!header||document.getElementById('schola-legacy-notice'))return;
+  const isVal=(document.documentElement.lang||'').toLowerCase().startsWith('ca');
+  const path=location.pathname.slice(prefix.length)||'index.html';
+  const notice=document.createElement('aside');
+  notice.id='schola-legacy-notice';
+  notice.setAttribute('role','note');
+  notice.style.cssText='box-sizing:border-box;max-width:74rem;margin:.65rem auto;padding:.65rem .9rem;border:1px solid rgba(128,128,128,.4);border-radius:.65rem;background:rgba(128,128,128,.09);font:inherit;font-size:.88rem;line-height:1.45;';
+  const message=document.createElement('span');
+  message.textContent=isVal
+   ?'Esta gramàtica també està disponible en ScholaClassica. Esta pàgina continua funcionant. '
+   :'Esta gramática también está disponible en ScholaClassica. Esta página sigue funcionando. ';
+  const link=document.createElement('a');
+  link.href='/ScholaClassica/apps/gramatica/'+path+location.search+location.hash;
+  link.textContent=isVal?'Obrir este apartat en ScholaClassica':'Abrir este apartado en ScholaClassica';
+  link.style.fontWeight='600';
+  notice.append(message,link);
+  header.insertAdjacentElement('afterend',notice);
+ });
+})();
