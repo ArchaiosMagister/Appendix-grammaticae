@@ -24,6 +24,10 @@ jobs:
           node-version: '22'
       - name: Comprobar gramática
         run: node scripts/validate-site.mjs
+      - name: Comprobar aviso de transición sin redirecciones
+        run: |
+          node --check assets/theme.js
+          node scripts/test-aviso-scholaclassica.mjs
 
   deploy:
     name: Publicar GitHub Pages
